@@ -18,7 +18,11 @@ El objetivo es generar **vistas listas para análisis y exploración de datos** 
 
 ---
 
-🧩 **Estructura del Repositorio**
+## 📂 Estructura de Archivos del Proyecto
+
+A continuación se detalla la organización del repositorio, pensada para mantener un flujo claro y modular del proceso ETL y de análisis de datos.
+
+
 
 
 📁 mysql-ips-colombia/
