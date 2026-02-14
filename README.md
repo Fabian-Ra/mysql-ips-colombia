@@ -83,6 +83,25 @@ A continuación se detalla la organización del repositorio, pensada para manten
 
 ## 🔄 Pipeline ETL Implementado
 
+### ⚙️ Configuración del Entorno MySQL 🛠️
+
+Para ejecutar la **carga masiva desde CSV** en tu entorno local, sigue estos pasos:
+```sql
+-- Habilita la carga de archivos locales
+SET GLOBAL local_infile = 1;
+
+-- Verifica configuración y versión del servidor
+SHOW VARIABLES LIKE 'local_infile';
+SHOW VARIABLES LIKE 'secure_file_priv';
+SELECT VERSION();
+```
+
+> ⚠️ **IMPORTANTE:** Esto es necesario únicamente en **entornos locales**.
+> En servidores gestionados (RDS, hosting) puede no estar permitido
+> y **no debe incluirse en los scripts ETL**.
+
+---
+
 ### ✅ 1. Extracción y Carga Inicial
 
 - Importación masiva desde CSV mediante `LOAD DATA INFILE`  
