@@ -1,20 +1,35 @@
-# 🧠 MySQL IPS Colombia — ETL Pipeline & Data Analysis
+# 🧠 MySQL IPS Colombia
+### ETL Avanzado, Normalización Geográfica y Vistas Analíticas para BI
 
-📊 Proyecto de modelado y análisis de datos del REPS (Registro Especial de Prestadores de Servicios de Salud) en Colombia.
+📊 Proyecto de ingeniería y análisis de datos basado en el **REPS (Registro Especial de Prestadores de Servicios de Salud)** de Colombia, orientado a la preparación de información confiable para **Business Intelligence** y **análisis territorial**.
 
-Este proyecto implementa un pipeline **ETL (Extracto, Transformación, Carga)** completo en **MySQL**, para diseñar, estructurar y transformar la información de las **IPS (Instituciones Prestadoras de Servicios de Salud)** registradas en el **REPS del Ministerio de Salud de Colombia**.
+Este repositorio implementa un **pipeline ETL completo en MySQL**, con foco en:
 
-El objetivo es generar **vistas listas para análisis y exploración de datos** en herramientas como **Power BI, Tableau o Python**.
+- limpieza estructural  
+- estandarización de claves geográficas  
+- control de calidad post-carga  
+- construcción de vistas analíticas listas para consumo en **Power BI** u otras herramientas BI  
 
 ---
 
-## 🚀 Objetivos del Proyecto
+## 🎯 Objetivo del Proyecto
 
-- Automatizar la carga y limpieza de datos del REPS en MySQL.  
-- Estandarizar columnas, tipos de datos e información inconsistente.  
-- Implementar un flujo ETL modular, documentado y optimizado.  
-- Crear vistas finales preparadas para visualización y reporting.  
-- Proveer una base sólida para análisis geográficos y estadísticos.  
+Diseñar una **base de datos relacional robusta** que transforme datos crudos del REPS en **métricas accionables**, permitiendo responder preguntas como:
+
+- ¿Cuál es la cobertura real de IPS por municipio ajustada por población?  
+- ¿Qué instituciones presentan alertas de vencimiento regulatorio?  
+- ¿Cómo se distribuyen las IPS según su naturaleza jurídica y antigüedad?  
+- ¿Dónde existen concentraciones o brechas de cobertura sanitaria?  
+
+---
+
+## 🧩 Alcance Técnico
+
+- ✔️ Implementación de ETL 100% en SQL (MySQL 8+)  
+- ✔️ Manejo de datos reales con inconsistencias (fechas, nulos, codificación)  
+- ✔️ Normalización avanzada para JOINs geográficos confiables  
+- ✔️ Modelado orientado a análisis, no solo almacenamiento  
+- ✔️ Vistas diseñadas para reporting operativo y dashboards  
 
 ---
 
@@ -31,13 +46,13 @@ A continuación se detalla la organización del repositorio, pensada para manten
 
 📂 sql/
 
-│   ├──📄 01_create_schema.sql         # Creación del esquema, tablas y base.
+│   ├──📄 01_create_schema.sql         # Creación del esquema y modelo base.
 
-│   ├──📄 02_load_and_clean_data.sql   # Carga y limpieza de datos (normalización y validaciones).
+│   ├──📄 02_load_and_clean_data.sql   # Carga masiva + limpieza y tipado.
 
-│   ├──📄 03_views_analytics.sql       # Vistas analíticas para consultas y dashboards.
+│   ├──📄 03_views_analytics.sql       # Vistas analíticas de negocio para consultas y dashboards.
 
-│   └──📄 04_reports_queries.sql       # Consultas finales para reportes o análisis específicos.
+│   └──📄 04_reports_queries.sql       # Consultas finales para reporting o análisis específicos.
 
 │
 
@@ -50,7 +65,6 @@ A continuación se detalla la organización del repositorio, pensada para manten
 ├── 📘 README.md                        # Documentación completa del proyecto.
 
 └── 📜 LICENCIA                         # Licencia MIT para uso abierto.
-
 
 
 
@@ -67,97 +81,93 @@ A continuación se detalla la organización del repositorio, pensada para manten
 
 ---
 
-## 🧰 Funcionalidades Principales
+## 🔄 Pipeline ETL Implementado
 
-### ✅ 1. Extracción (Extracto)
-- Importa el dataset REPS (.csv o .xlsx) a tablas temporales.  
-- Verifica integridad de columnas y formatos.  
+### ✅ 1. Extracción y Carga Inicial
 
-### ✅ 2. Transformación (Transformación)
-- Limpieza de datos: eliminación de duplicados, nulos y errores.  
-- Homogeneización de nombres de municipios y departamentos.  
-- Conversión y normalización de tipos de datos.  
+- Importación masiva desde CSV mediante `LOAD DATA INFILE`  
+- Manejo explícito de:
+  - valores vacíos  
+  - guiones (`--`)  
+  - errores de formato  
 
-### ✅ 3. Carga Final (Carga)
-- Inserción en tablas optimizadas.  
-- Creación de vistas:
-  - IPS por tipo y departamento.  
-  - Tendencias de habilitación.  
-  - Cobertura nacional por servicio.  
+### ✅ 2. Transformación y Limpieza de Datos
 
-### ✅ 4. Consultas Analíticas
-- Preparadas para dashboards en herramientas BI.  
+- Conversión robusta de fechas en múltiples formatos  
+- Normalización de tipos numéricos y campos nulos  
+- Control de calidad post-carga (conteo y validación de campos críticos)  
+
+### ✅ 3. Normalización Geográfica (Paso Crítico)
+
+- Creación de claves de unión estandarizadas:
+  - eliminación de tildes  
+  - normalización a mayúsculas  
+  - corrección de problemas de codificación  
+
+Garantiza **JOINs consistentes** entre IPS y población.
+
+### ✅ 4. Modelado Analítico (Vistas)
+
+- 📌 Cobertura de IPS por 100.000 habitantes  
+- 📌 Análisis de naturaleza jurídica y antigüedad institucional  
+- 📌 Alertas de vencimiento para priorización de auditorías  
+
+Vistas diseñadas para **consumo directo en Power BI** sin lógica adicional.
+
+---
+
+## 📊 Ejemplos de Métricas Generadas
+
+- Cobertura sanitaria ajustada por población  
+- Distribución público vs. privado  
+- Antigüedad institucional (años)  
+- Estados de habilitación:
+  - Vigente  
+  - Próxima a vencer (≤ 90 días)  
+  - Vencida  
 
 ---
 
-### 🧪 Ejemplo de Consulta
+## 📈 Resultado del Proyecto
 
-```sql
--- Cantidad de IPS por departamento y tipo
-SELECT 
-    departamento,
-    tipo_entidad,
-    COUNT(*) AS total_ips
-FROM 
-    vista_ips_analitica
-GROUP BY 
-    departamento, tipo_entidad
-ORDER BY 
-    total_ips DESC;
-```
-
+- ✔️ Dataset limpio, tipado y validado  
+- ✔️ JOINs geográficos confiables  
+- ✔️ Vistas listas para análisis inmediato  
+- ✔️ Base escalable para análisis descriptivo o predictivo  
+- ✔️ SQL reutilizable y documentado  
 
 ---
-## 📈 Resultados Esperados
 
-Dataset limpio y estructurado en base MySQL.
+## 📍 Fuentes de Datos
 
-Vistas analíticas listas para visualización inmediata.
-
-Flujo ETL reproducible, escalable y mantenible.
-
-Base sólida para analítica descriptiva o predictiva.
-
-
-
-## 🧠 Aprendizajes y Enfoque Técnico
-
-Este proyecto demuestra competencias en:
-
-Modelado de datos relacional.
-
-Diseño y optimización de consultas SQL.
-
-Procesos ETL aplicados a entornos reales.
-
-Pensamiento analítico orientado a la calidad de datos.
-
-Preparación de información para Business Intelligence.
-
-
-
-## 📍 Contexto en Colombia
-
-El análisis de las IPS registradas en el REPS es fundamental para entender la distribución, capacidad y cobertura de los servicios de salud.
-Este proyecto transforma datos oficiales del Ministerio de Salud en información accesible y visualizable, útil para análisis públicos, institucionales o de investigación.
+- **REPS** – Registro Especial de Prestadores de Servicios de Salud  
+- **DANE** – Proyecciones oficiales de población por departamento y municipio, utilizadas para el cálculo de métricas de cobertura  
 
 ---
-🧾 Licencia
----
-Este proyecto está bajo la Licencia MIT, lo que permite su uso, copia, modificación y distribución con atribución correspondiente.
+
+## 🧠 Enfoque Profesional
+
+Este proyecto refleja competencias en:
+
+- Ingeniería de datos con SQL  
+- ETL aplicado a datos reales  
+- Pensamiento analítico orientado a negocio  
+- Preparación de datos para Business Intelligence  
+- Calidad, trazabilidad y consistencia de la información  
 
 ---
-👤 Autor
+
+## 🧾 Licencia
+
+Licencia **MIT** — uso libre con atribución.
+
 ---
-Fabian Ramirez
 
-💼 Data Analyst | SQL & Python Developer
+## 👤 Autor
 
-📍 Colombia
+**Fabian Ramírez**  
+📊 Data Analyst | SQL · Power BI · Python  
+📍 Colombia  
+🌐 GitHub: **Fabian-Ra**
 
-🌐 GitHub: Fabian-Ra
-
-
-
- 💡 “La calidad del análisis depende de la calidad de los datos,
- y la calidad de los datos depende del proceso que los transforma.”
+> _“La calidad del análisis depende de la calidad del proceso que transforma los datos.”_
