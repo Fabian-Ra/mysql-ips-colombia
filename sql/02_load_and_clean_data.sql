@@ -127,8 +127,24 @@ IGNORE 1 ROWS
 -- 4. ESTANDARIZACIÓN DE CLAVES GEOGRÁFICAS
 -- ----------------------------------------------------------------------
 
-ALTER TABLE ips_col
-ADD COLUMN IF NOT EXISTS clave_ips_final VARCHAR(150);
+-- 4.1 Clave geográfica estandarizada para IPS
+SET @col_exists := (
+    SELECT COUNT(*)
+    FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'ips_col'
+      AND COLUMN_NAME = 'clave_ips_final'
+);
+
+SET @sql := IF(
+    @col_exists = 0,
+    'ALTER TABLE ips_col ADD COLUMN clave_ips_final VARCHAR(150)',
+    'SELECT 1'
+);
+
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
 UPDATE ips_col
 SET clave_ips_final =
@@ -146,8 +162,24 @@ SET clave_ips_final =
             'Ú','U'),
         ' ','_');
 
-ALTER TABLE tabla_poblacion
-ADD COLUMN IF NOT EXISTS clave_pob_final VARCHAR(150);
+-- 4.2 Clave geográfica estandarizada para población (DANE)
+SET @col_exists := (
+    SELECT COUNT(*)
+    FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = DATABASE()
+      AND TABLE_NAME = 'tabla_poblacion'
+      AND COLUMN_NAME = 'clave_pob_final'
+);
+
+SET @sql := IF(
+    @col_exists = 0,
+    'ALTER TABLE tabla_poblacion ADD COLUMN clave_pob_final VARCHAR(150)',
+    'SELECT 1'
+);
+
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
 UPDATE tabla_poblacion
 SET clave_pob_final =
