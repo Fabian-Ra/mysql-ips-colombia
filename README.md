@@ -3,33 +3,34 @@
 
 📊 Proyecto de ingeniería y análisis de datos basado en el **REPS (Registro Especial de Prestadores de Servicios de Salud)** de Colombia, orientado a la preparación de información confiable para **Business Intelligence** y **análisis territorial**.
 
-Este repositorio implementa un **pipeline ETL completo en MySQL**, con foco en:
+Este repositorio implementa un **pipeline ETL completo en MySQL**, diseñado para transformar datos públicos crudos en un **modelo analítico estructurado**, listo para consumo en **herramientas BI**.
 
-- limpieza estructural  
+- limpieza y tipado robusto de datos reales  
 - estandarización de claves geográficas  
-- control de calidad post-carga  
-- construcción de vistas analíticas listas para consumo en **Power BI** u otras herramientas BI  
-
+- control de calidad post-carga
+- modelado analítico mediante vistas reutilizables  
+- consultas ejecutivas orientadas a toma de decisiones
 ---
 
 ## 🎯 Objetivo del Proyecto
 
-Diseñar una **base de datos relacional robusta** que transforme datos crudos del REPS en **métricas accionables**, permitiendo responder preguntas como:
+Diseñar e implementar una **base de datos relacional reproducible** que transforme datos crudos del REPS en **métricas accionables**, permitiendo responder preguntas estratégicas como:
 
 - ¿Cuál es la cobertura real de IPS por municipio ajustada por población?  
-- ¿Qué instituciones presentan alertas de vencimiento regulatorio?  
-- ¿Cómo se distribuyen las IPS según su naturaleza jurídica y antigüedad?  
-- ¿Dónde existen concentraciones o brechas de cobertura sanitaria?  
+- ¿Qué instituciones presentan alertas regulatorias por vencimiento?  
+- ¿Cómo se distribuyen las IPS según naturaleza jurídica y antigüedad?
+- ¿Dónde existen posibles brechas territoriales en infraestructura sanitaria?  
 
 ---
 
 ## 🧩 Alcance Técnico
 
-- ✔️ Implementación de ETL 100% en SQL (MySQL 8+)  
-- ✔️ Manejo de datos reales con inconsistencias (fechas, nulos, codificación)  
-- ✔️ Normalización avanzada para JOINs geográficos confiables  
-- ✔️ Modelado orientado a análisis, no solo almacenamiento  
-- ✔️ Vistas diseñadas para reporting operativo y dashboards  
+- ✔️ Pipeline ETL implementado 100% en SQL (MySQL 8+)  
+- ✔️ Carga masiva con `LOAD DATA INFILE`  
+- ✔️ Manejo de inconsistencias reales (nulos, formatos de fecha, codificación)  
+- ✔️ Normalización geográfica para JOINs confiables  
+- ✔️ Separación clara por capas: DDL → ETL → Vistas → Consultas  
+- ✔️ Diseño preparado para integración con Power BI  
 
 ---
 
@@ -46,25 +47,25 @@ A continuación se detalla la organización del repositorio, pensada para manten
 
 📂 sql/
 
-│   ├──📄 01_create_schema.sql         # Creación del esquema y modelo base.
+│   ├──📄 01_create_schema.sql          >**Creación del esquema y modelo relacional base.**
 
-│   ├──📄 02_load_and_clean_data.sql   # Carga masiva + limpieza y tipado.
+│   ├──📄 02_load_and_clean_data.sql    >**ETL: carga masiva, limpieza y tipado.**
 
-│   ├──📄 03_views_analytics.sql       # Vistas analíticas de negocio para consultas y dashboards.
+│   ├──📄 03_views_analytics.sql        >**Vistas analíticas de negocio para consultas y dashboards.**
 
-│   └──📄 04_reports_queries.sql       # Consultas finales para reporting o análisis específicos.
+│   └──📄 04_reports_queries.sql        >**Consultas finales para reporting o análisis específicos.**
 
 │
 
 📂 datos/
 
-│   └── 📊 mi_data_ips.csv              # Dataset REPS utilizado para el análisis.
+│   └── 📊 mi_data_ips.csv              >**Dataset REPS: registro de IPS (prestadores de salud).**
 
-│
+│   └── 📊 poblacion_dane_final.csv     >**Dataset DANE: Población oficial por departamento y municipio, para métricas de cobertura sanitaria.**
 
-├── 📘 README.md                        # Documentación completa del proyecto.
+├── 📘 README.md                        >**Documentación completa del proyecto.**
 
-└── 📜 LICENCIA                         # Licencia MIT para uso abierto.
+└── 📜 LICENCIA                         >**Licencia MIT para uso abierto.**
 
 
 
@@ -72,12 +73,12 @@ A continuación se detalla la organización del repositorio, pensada para manten
 
 ## ⚙️ Tecnologías y Herramientas
 
-- **MySQL 8.0+**  
-- **MySQL Workbench / CLI MySQL**  
-- **SQL estándar ANSI**  
-- **ETL y limpieza de datos**  
-- **Modelado de datos relacional**  
-- **Optimización de consultas y creación de vistas**
+- **MySQL 8.0+**
+- **MySQL Workbench / MySQL CLI**
+- **SQL ANSI**
+- Modelado relacional
+- ETL y limpieza de datos
+- Diseño de capa semántica para BI
 
 ---
 
@@ -85,12 +86,10 @@ A continuación se detalla la organización del repositorio, pensada para manten
 
 ### ⚙️ Configuración del Entorno MySQL 🛠️
 
-Para ejecutar la **carga masiva desde CSV** en tu entorno local, sigue estos pasos:
+Para ejecutar la **carga masiva desde CSV** en entorno local:
 ```sql
--- Habilita la carga de archivos locales
 SET GLOBAL local_infile = 1;
 
--- Verifica configuración y versión del servidor
 SHOW VARIABLES LIKE 'local_infile';
 SHOW VARIABLES LIKE 'secure_file_priv';
 SELECT VERSION();
@@ -102,45 +101,52 @@ SELECT VERSION();
 
 ---
 
-### ✅ 1. Extracción y Carga Inicial
+### ✅ 1. Extracción y Carga
 
-- Importación masiva desde CSV mediante `LOAD DATA INFILE`  
+- Importación masiva mediante `LOAD DATA INFILE`  
 - Manejo explícito de:
   - valores vacíos  
   - guiones (`--`)  
-  - errores de formato  
+  - campos opcionales
+- Uso de variables intermedias (@campo) para limpieza controlada
 
-### ✅ 2. Transformación y Limpieza de Datos
+### ✅ 2. Transformación y Limpieza
 
 - Conversión robusta de fechas en múltiples formatos  
 - Normalización de tipos numéricos y campos nulos  
 - Control de calidad post-carga (conteo y validación de campos críticos)  
 
-### ✅ 3. Normalización Geográfica (Paso Crítico)
+### ✅ 3. Normalización Geográfica (Componente Crítico)
 
 - Creación de claves de unión estandarizadas:
-  - eliminación de tildes  
-  - normalización a mayúsculas  
-  - corrección de problemas de codificación  
+  - eliminación de tildes
+  - normalización a mayúsculas
+  - reemplazo de espacios  
+- Garantiza JOIN consistente entre:
+  - tabla de IPS
+  - tabla de población (DANE)
+Este paso asegura **integridad analítica** en **métricas territoriales**.
 
-Garantiza **JOINs consistentes** entre IPS y población.
-
-### ✅ 4. Modelado Analítico (Vistas)
+### ✅ 4.Capa Semántica (Vistas Analíticas)
+*Se diseñaron vistas reutilizables para consumo directo en BI:*
 
 - 📌 Cobertura de IPS por 100.000 habitantes  
 - 📌 Análisis de naturaleza jurídica y antigüedad institucional  
-- 📌 Alertas de vencimiento para priorización de auditorías  
+- 📌 Alertas operativas de vencimiento regulatorio
 
-Vistas diseñadas para **consumo directo en Power BI** sin lógica adicional.
+*Separación clara entre:*
+- Definición de vistas (capa analítica)
+- Consultas ejecutivas (capa de consumo)
 
 ---
 
 ## 📊 Ejemplos de Métricas Generadas
 
-- Cobertura sanitaria ajustada por población  
+- Cobertura sanitaria ajustada por población
+- Densidad de IPS por municipio  
 - Distribución público vs. privado  
 - Antigüedad institucional (años)  
-- Estados de habilitación:
+- Clasificación de riesgo regulatorio:
   - Vigente  
   - Próxima a vencer (≤ 90 días)  
   - Vencida  
@@ -149,18 +155,18 @@ Vistas diseñadas para **consumo directo en Power BI** sin lógica adicional.
 
 ## 📈 Resultado del Proyecto
 
+- ✔️ Base de datos reproducible y documentada
 - ✔️ Dataset limpio, tipado y validado  
-- ✔️ JOINs geográficos confiables  
-- ✔️ Vistas listas para análisis inmediato  
+- ✔️ JOINs geográficos consistentes  
+- ✔️ Métricas normalizadas listas para visualización
 - ✔️ Base escalable para análisis descriptivo o predictivo  
-- ✔️ SQL reutilizable y documentado  
 
 ---
 
 ## 📍 Fuentes de Datos
 
 - **REPS** – Registro Especial de Prestadores de Servicios de Salud  
-- **DANE** – Proyecciones oficiales de población por departamento y municipio, utilizadas para el cálculo de métricas de cobertura  
+- **DANE** – Proyecciones oficiales de población por departamento y municipio
 
 ---
 
@@ -169,9 +175,11 @@ Vistas diseñadas para **consumo directo en Power BI** sin lógica adicional.
 Este proyecto refleja competencias en:
 
 - Ingeniería de datos con SQL  
-- ETL aplicado a datos reales  
-- Pensamiento analítico orientado a negocio  
-- Preparación de datos para Business Intelligence  
+- Diseño de pipelines ETL reproducibles
+- Control de calidad y validación de datos  
+- Modelado relacional orientado a análisis 
+- Preparación de datos para Business Intelligence
+- Pensamiento analítico aplicado a datos públicos  
 - Calidad, trazabilidad y consistencia de la información  
 
 ---
