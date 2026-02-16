@@ -128,7 +128,7 @@ IGNORE 1 ROWS
 -- ----------------------------------------------------------------------
 
 ALTER TABLE ips_col
-ADD COLUMN clave_ips_final VARCHAR(150);
+ADD COLUMN IF NOT EXISTS clave_ips_final VARCHAR(150);
 
 UPDATE ips_col
 SET clave_ips_final =
@@ -137,15 +137,17 @@ SET clave_ips_final =
             REPLACE(
                 REPLACE(
                     REPLACE(
-                        UPPER(CONCAT(depa_nombre, '_', muni_nombre)),
-                        'Á','A'),
-                    'É','E'),
-                'Í','I'),
-            'Ó','O'),
-        'Ú','U');
+                        REPLACE(
+                            UPPER(CONCAT(TRIM(depa_nombre), '_', TRIM(muni_nombre))),
+                            'Á','A'),
+                        'É','E'),
+                    'Í','I'),
+                'Ó','O'),
+            'Ú','U'),
+        ' ','_');
 
 ALTER TABLE tabla_poblacion
-ADD COLUMN clave_pob_final VARCHAR(150);
+ADD COLUMN IF NOT EXISTS clave_pob_final VARCHAR(150);
 
 UPDATE tabla_poblacion
 SET clave_pob_final =
@@ -154,9 +156,11 @@ SET clave_pob_final =
             REPLACE(
                 REPLACE(
                     REPLACE(
-                        UPPER(clave_union),
-                        'Á','A'),
-                    'É','E'),
-                'Í','I'),
-            'Ó','O'),
-        'Ú','U');
+                        REPLACE(
+                            UPPER(CONCAT(TRIM(DPNOM), '_', TRIM(DPMP))),
+                            'Á','A'),
+                        'É','E'),
+                    'Í','I'),
+                'Ó','O'),
+            'Ú','U'),
+        ' ','_');
