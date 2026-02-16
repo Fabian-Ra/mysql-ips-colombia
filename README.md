@@ -63,6 +63,8 @@ A continuación se detalla la organización del repositorio, pensada para manten
 
 │   └── 📊 poblacion_dane_final.csv     >**Dataset DANE: Población oficial por departamento y municipio, para métricas de cobertura sanitaria.**
 
+|
+
 ├── 📘 README.md                        >**Documentación completa del proyecto.**
 
 └── 📜 LICENCIA                         >**Licencia MIT para uso abierto.**
