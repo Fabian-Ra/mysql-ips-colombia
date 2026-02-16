@@ -1,63 +1,78 @@
--- ######################################################################
--- # 1. CONFIGURACIÓN INICIAL DEL ESQUEMA (BASE DE DATOS)
--- ######################################################################
+-- ======================================================================
+-- Proyecto: mysql-ips-colombia
+-- Archivo: 01_create_schema.sql
+-- Capa: DDL (Definición del esquema)
+-- Descripción: Creación de la base de datos y de la tabla principal
+--              para el registro de IPS en Colombia.
+-- Orden de ejecución: 1 de 4
+-- ======================================================================
 
--- Crea el esquema (base de datos) 'ips_colombia' si no existe.
--- Se utiliza la codificación 'utf8mb4' para asegurar el soporte completo de caracteres especiales
--- (tildes, Ñ, etc.) presentes en los datos geográficos de Colombia.
-CREATE DATABASE IF NOT EXISTS ips_colombia
+-- ----------------------------------------------------------------------
+-- 1. REINICIO Y CREACIÓN DE LA BASE DE DATOS
+-- ----------------------------------------------------------------------
+
+-- Se elimina la base de datos si existe para garantizar una ejecución
+-- completamente reproducible del proyecto desde cero.
+DROP DATABASE IF EXISTS ips_colombia;
+
+-- Creación de la base de datos con codificación utf8mb4 para asegurar
+-- soporte completo de caracteres especiales (tildes, ñ, etc.).
+CREATE DATABASE ips_colombia
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_general_ci;
 
--- Selecciona el esquema recién creado para que las siguientes consultas
--- (CREATE TABLE, ALTER TABLE) se ejecuten dentro de este contexto.
+-- Selección del esquema de trabajo.
 USE ips_colombia;
 
--- ######################################################################
--- # 2. CREACIÓN DE LA TABLA PRINCIPAL DE IPS (Prestadores de Salud)
--- ######################################################################
+-- ----------------------------------------------------------------------
+-- 2. TABLA PRINCIPAL: REGISTRO DE IPS
+-- ----------------------------------------------------------------------
 
--- Nota: Se asume que la carga inicial de datos (Importación CSV) se realiza después de crear esta estructura.
-
-CREATE TABLE IF NOT EXISTS ips_col (
-    -- Clave primaria auto-incremental. Identificador único de cada registro de IPS.
-    id INT AUTO_INCREMENT PRIMARY KEY, 
+CREATE TABLE ips_col (
     
-    -- Columna clave para uniones geográficas.
+    -- Clave primaria auto-incremental.
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    
+    -- Información geográfica.
     depa_nombre VARCHAR(150),
     muni_nombre VARCHAR(150),
     
+    -- Identificación del prestador.
     codigo_habilitacion VARCHAR(50),
     nombre_prestador VARCHAR(300),
-    
-    -- NITs, se manejan como VARCHAR para incluir ceros iniciales si los hay.
-    nits_nit VARCHAR(30), 
+    nits_nit VARCHAR(30),      -- Se maneja como VARCHAR para conservar ceros iniciales.
     razon_social VARCHAR(300),
     
-    -- Clasificación del prestador (tipo y nombre)
-    clpr_codigo INT, 
+    -- Clasificación del prestador.
+    clpr_codigo INT,
     clpr_nombre VARCHAR(100),
     ese VARCHAR(20),
     
+    -- Información de contacto.
     direccion VARCHAR(400),
     telefono VARCHAR(80),
     email VARCHAR(300),
+    
+    -- Características operativas.
     nivel VARCHAR(20),
     caracter VARCHAR(100),
     habilitado VARCHAR(20),
     
-    -- Fechas: Se usa DATE para calcular antigüedad y vigencia.
+    -- Fechas relevantes del registro.
     fecha_radicacion DATE,
     fecha_vencimiento DATE,
     fecha_cierre DATE,
     
     dv INT,
     
-    -- Naturaleza jurídica: Clave para la clasificación Público/Privado.
+    -- Naturaleza jurídica.
     clase_persona VARCHAR(80),
     naju_codigo INT,
     naju_nombre VARCHAR(80),
     
     numero_sede_principal INT,
-    fecha_corte_REPS DATETIME -- Se usa DATETIME ya que puede incluir hora.
+    
+    -- Fecha de corte del registro REPS.
+    fecha_corte_REPS DATETIME
 );
+
