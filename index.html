@@ -2,109 +2,860 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Fabian Ramírez | Data Analyst</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fabian Ramírez | MySQL IPS Colombia</title>
+  <meta name="description" content="Pipeline ETL en MySQL sobre el REPS de Colombia. Análisis territorial de prestadores de salud para Business Intelligence.">
 
-  <!-- Google Analytics -->
+  <!-- Google Analytics 4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-C0MXFHDP9F"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-C0MXFHDP9F');
   </script>
 
+  <!-- Tipografía -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
   <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --black: #0a0a0a;
+      --ink: #1a1a1a;
+      --mid: #555;
+      --muted: #888;
+      --rule: #e0e0e0;
+      --bg: #fafaf8;
+      --white: #ffffff;
+      --accent: #1a6b4a;
+      --accent-light: #f0f7f3;
+      --mono: 'DM Mono', monospace;
+      --serif: 'Playfair Display', Georgia, serif;
+      --sans: 'DM Sans', system-ui, sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background: #0f172a;
-      color: #f1f5f9;
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
     }
-    header {
-      padding: 40px;
-      text-align: center;
-      background: #1e293b;
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 60px;
+      background: rgba(250, 250, 248, 0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--rule);
     }
-    h1 {
-      margin: 0;
-      font-size: 32px;
+
+    .nav-brand {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
     }
-    .container {
-      padding: 40px;
-      max-width: 900px;
-      margin: auto;
+
+    .nav-links {
+      display: flex;
+      gap: 36px;
+      list-style: none;
     }
-    .card {
-      background: #1e293b;
-      padding: 20px;
-      border-radius: 10px;
+
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--mid);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: color 0.15s;
+    }
+
+    .nav-links a:hover {
+      color: var(--black);
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      padding: 160px 80px 100px;
+      max-width: 1080px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 80px;
+      align-items: end;
+    }
+
+    .hero-left {}
+
+    .hero-kicker {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hero-kicker::before {
+      content: '';
+      display: block;
+      width: 32px;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    .hero-name {
+      font-family: var(--serif);
+      font-size: clamp(52px, 6vw, 88px);
+      font-weight: 900;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      color: var(--black);
+      margin-bottom: 10px;
+    }
+
+    .hero-project {
+      font-family: var(--serif);
+      font-size: clamp(20px, 2.5vw, 32px);
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 32px;
+      letter-spacing: -0.01em;
+    }
+
+    .hero-desc {
+      font-size: 16px;
+      font-weight: 300;
+      color: var(--mid);
+      max-width: 480px;
+      line-height: 1.75;
+    }
+
+    .hero-right {
+      padding-bottom: 8px;
+    }
+
+    .hero-meta {
+      border-left: 2px solid var(--rule);
+      padding-left: 28px;
+    }
+
+    .meta-item {
+      margin-bottom: 28px;
+    }
+
+    .meta-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .meta-value {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    /* ─── DIVIDER ─── */
+    .hr {
+      border: none;
+      border-top: 1px solid var(--rule);
+      margin: 0 80px;
+    }
+
+    /* ─── SECCIONES ─── */
+    .section {
+      padding: 80px 80px;
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .section-num {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .section-title {
+      font-family: var(--serif);
+      font-size: clamp(28px, 3vw, 42px);
+      font-weight: 700;
+      color: var(--black);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: 48px;
+    }
+
+    /* ─── PROBLEMA ─── */
+    .problem-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+    }
+
+    .problem-item {
+      background: var(--white);
+      padding: 36px 32px;
+      transition: background 0.2s;
+    }
+
+    .problem-item:hover {
+      background: var(--accent-light);
+    }
+
+    .problem-index {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      margin-bottom: 14px;
+    }
+
+    .problem-q {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--ink);
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+
+    .problem-a {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 300;
+      line-height: 1.6;
+    }
+
+    /* ─── PIPELINE ─── */
+    .pipeline {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 32px;
+      padding: 40px 0;
+      border-top: 1px solid var(--rule);
+    }
+
+    .step:last-child {
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .step-number {
+      font-family: var(--serif);
+      font-size: 48px;
+      font-weight: 900;
+      color: var(--rule);
+      line-height: 1;
+      padding-top: 4px;
+      transition: color 0.2s;
+    }
+
+    .step:hover .step-number {
+      color: var(--accent);
+    }
+
+    .step-content {}
+
+    .step-tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .step-title {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--black);
+      margin-bottom: 10px;
+    }
+
+    .step-desc {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--mid);
+      line-height: 1.7;
       margin-bottom: 20px;
     }
-    button {
-      background: #38bdf8;
-      border: none;
-      padding: 12px 20px;
-      color: black;
-      font-weight: bold;
-      border-radius: 6px;
-      cursor: pointer;
+
+    .code-block {
+      background: var(--black);
+      border-radius: 4px;
+      padding: 20px 24px;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.8;
+      color: #a3b8a8;
+      overflow-x: auto;
     }
-    button:hover {
-      background: #0ea5e9;
+
+    .code-block .kw  { color: #7ec8a4; }
+    .code-block .fn  { color: #c8e6d4; font-weight: 500; }
+    .code-block .str { color: #f0c080; }
+    .code-block .cm  { color: #555f57; }
+
+    /* ─── RESULTADOS ─── */
+    .results-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+      margin-bottom: 40px;
+    }
+
+    .result-stat {
+      background: var(--white);
+      padding: 40px 32px;
+      text-align: left;
+    }
+
+    .stat-value {
+      font-family: var(--serif);
+      font-size: 64px;
+      font-weight: 900;
+      color: var(--black);
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--mid);
+      line-height: 1.5;
+    }
+
+    .status-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .status-table th {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-transform: uppercase;
+      text-align: left;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--rule);
+      font-weight: 400;
+    }
+
+    .status-table td {
+      padding: 16px 0;
+      border-bottom: 1px solid var(--rule);
+      color: var(--ink);
+      vertical-align: middle;
+    }
+
+    .status-table td:first-child {
+      font-weight: 500;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+
+    .dot-green  { background: #22c55e; }
+    .dot-amber  { background: #f59e0b; }
+    .dot-red    { background: #ef4444; }
+
+    td.status-cell {
+      display: flex;
+      align-items: center;
+    }
+
+    /* ─── CTA ─── */
+    .cta-section {
+      background: var(--black);
+      color: var(--white);
+      padding: 96px 80px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 60px;
+    }
+
+    .cta-left {}
+
+    .cta-eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .cta-title {
+      font-family: var(--serif);
+      font-size: clamp(32px, 4vw, 56px);
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: var(--white);
+      margin-bottom: 16px;
+    }
+
+    .cta-sub {
+      font-size: 15px;
+      font-weight: 300;
+      color: #888;
+      max-width: 440px;
+    }
+
+    .cta-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 16px 32px;
+      background: var(--white);
+      color: var(--black);
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      border-radius: 2px;
+      cursor: pointer;
+      text-decoration: none;
+      letter-radius: 0.02em;
+      transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent);
+      color: var(--white);
+    }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 15px 32px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 14px;
+      border: 1px solid #333;
+      border-radius: 2px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: border-color 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn-ghost:hover {
+      border-color: #555;
+      color: var(--white);
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--rule);
+      padding: 28px 80px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-copy {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 28px;
+    }
+
+    .footer-links a {
+      font-size: 12px;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .footer-links a:hover {
+      color: var(--ink);
+    }
+
+    /* ─── GITHUB ICON ─── */
+    .gh-icon {
+      width: 16px;
+      height: 16px;
+      display: inline-block;
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+
+    /* ─── ANIMACIÓN ENTRADA ─── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-kicker  { animation: fadeUp 0.5s ease both 0.1s; }
+    .hero-name    { animation: fadeUp 0.5s ease both 0.2s; }
+    .hero-project { animation: fadeUp 0.5s ease both 0.3s; }
+    .hero-desc    { animation: fadeUp 0.5s ease both 0.4s; }
+    .hero-right   { animation: fadeUp 0.5s ease both 0.5s; }
+
+    /* ─── RESPONSIVE BÁSICO ─── */
+    @media (max-width: 820px) {
+      nav { padding: 0 24px; }
+      .nav-links { display: none; }
+      .hero {
+        grid-template-columns: 1fr;
+        padding: 120px 24px 64px;
+        gap: 48px;
+      }
+      .hr { margin: 0 24px; }
+      .section { padding: 60px 24px; }
+      .problem-grid,
+      .results-row { grid-template-columns: 1fr; }
+      .cta-section {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 64px 24px;
+      }
+      footer { padding: 24px; flex-direction: column; gap: 16px; text-align: center; }
     }
   </style>
 </head>
-
 <body>
 
-<header>
-  <h1>Fabian Ramírez</h1>
-  <p>Data Analyst | SQL | BI | Analítica de Datos</p>
-</header>
-
-<div class="container">
-
-  <div class="card">
-    <h2>Proyecto: Análisis de IPS en Colombia</h2>
-    <p>
-      Proyecto enfocado en el análisis de datos del sistema de salud en Colombia utilizando SQL.
-      Se trabajó en la limpieza, transformación y análisis de datos para generar insights relevantes
-      sobre cobertura y distribución de IPS.
-    </p>
-  </div>
-
-  <div class="card">
-    <h2>Enfoque del análisis</h2>
-    <ul>
-      <li>Consultas SQL para extracción de datos</li>
-      <li>Construcción de métricas clave</li>
-      <li>Análisis exploratorio</li>
-      <li>Optimización de consultas</li>
+  <!-- NAV -->
+  <nav>
+    <span class="nav-brand">fabian-ra / mysql-ips-colombia</span>
+    <ul class="nav-links">
+      <li><a href="#proyecto">Proyecto</a></li>
+      <li><a href="#pipeline">Pipeline</a></li>
+      <li><a href="#resultados">Resultados</a></li>
+      <li><a href="#github">GitHub</a></li>
     </ul>
-  </div>
+  </nav>
 
-  <div class="card">
-    <h2>Acceso al proyecto</h2>
-    <p>Puedes ver el repositorio completo aquí:</p>
+  <!-- HERO -->
+  <header>
+    <div class="hero">
+      <div class="hero-left">
+        <p class="hero-kicker">Portafolio · Datos · Colombia</p>
+        <h1 class="hero-name">Fabian<br>Ramírez</h1>
+        <p class="hero-project">MySQL IPS Colombia</p>
+        <p class="hero-desc">
+          Pipeline ETL completo sobre el REPS — de datos crudos a métricas accionables para Business Intelligence territorial en salud.
+        </p>
+      </div>
+      <div class="hero-right">
+        <div class="hero-meta">
+          <div class="meta-item">
+            <p class="meta-label">Stack</p>
+            <p class="meta-value">MySQL 8+, SQL, Power BI</p>
+          </div>
+          <div class="meta-item">
+            <p class="meta-label">Fuentes</p>
+            <p class="meta-value">REPS · DANE</p>
+          </div>
+          <div class="meta-item">
+            <p class="meta-label">Tipo</p>
+            <p class="meta-value">ETL · Análisis territorial</p>
+          </div>
+          <div class="meta-item">
+            <p class="meta-label">Licencia</p>
+            <p class="meta-value">MIT — uso libre</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
 
-    <button onclick="trackClick()">
-      Ver repositorio en GitHub
-    </button>
-  </div>
+  <hr class="hr">
 
-</div>
+  <!-- PROBLEMA DE NEGOCIO -->
+  <section class="section" id="proyecto">
+    <p class="section-num">01 · Problema de negocio</p>
+    <h2 class="section-title">Preguntas que este<br>proyecto responde</h2>
 
-<script>
-function trackClick() {
-  gtag('event', 'click_repo', {
-    'event_category': 'engagement',
-    'event_label': 'GitHub Project'
-  });
+    <div class="problem-grid">
+      <div class="problem-item">
+        <p class="problem-index">P.01</p>
+        <p class="problem-q">¿Cuál es la densidad real de IPS por municipio ajustada por población?</p>
+        <p class="problem-a">Cobertura sanitaria calculada sobre proyecciones DANE oficiales, normalizada a 100.000 habitantes.</p>
+      </div>
+      <div class="problem-item">
+        <p class="problem-index">P.02</p>
+        <p class="problem-q">¿Qué prestadores presentan alertas regulatorias por vencimiento?</p>
+        <p class="problem-a">Clasificación de riesgo en tres estados: vigente, próxima a vencer (≤ 90 días) y vencida.</p>
+      </div>
+      <div class="problem-item">
+        <p class="problem-index">P.03</p>
+        <p class="problem-q">¿Cómo se distribuyen las IPS por naturaleza jurídica y antigüedad?</p>
+        <p class="problem-a">Análisis de distribución público vs. privado e institucionalidad histórica por departamento.</p>
+      </div>
+      <div class="problem-item">
+        <p class="problem-index">P.04</p>
+        <p class="problem-q">¿Dónde existen brechas territoriales en infraestructura sanitaria?</p>
+        <p class="problem-a">Identificación de municipios con cobertura crítica como insumo para decisiones de política pública.</p>
+      </div>
+    </div>
+  </section>
 
-  window.open('https://github.com/Fabian-Ra/mysql-ips-colombia', '_blank');
-}
-</script>
+  <hr class="hr">
+
+  <!-- PIPELINE -->
+  <section class="section" id="pipeline">
+    <p class="section-num">02 · Metodología</p>
+    <h2 class="section-title">Pipeline ETL implementado<br>100% en SQL</h2>
+
+    <div class="pipeline">
+
+      <div class="step">
+        <div class="step-number">01</div>
+        <div class="step-content">
+          <p class="step-tag">Extracción</p>
+          <h3 class="step-title">Carga masiva desde CSV</h3>
+          <p class="step-desc">Importación del dataset REPS con <code style="font-family:var(--mono);font-size:12px;color:var(--accent)">LOAD DATA INFILE</code>. Manejo explícito de nulos, separadores y campos opcionales mediante variables intermedias <code style="font-family:var(--mono);font-size:12px;color:var(--accent)">@campo</code> para control antes de inserción.</p>
+          <div class="code-block">
+<span class="kw">LOAD DATA</span> <span class="fn">INFILE</span> <span class="str">'mi_data_ips.csv'</span>
+<span class="kw">INTO TABLE</span> ips_raw
+<span class="kw">FIELDS TERMINATED BY</span> <span class="str">','</span> <span class="kw">ENCLOSED BY</span> <span class="str">'"'</span>
+<span class="kw">LINES TERMINATED BY</span> <span class="str">'\n'</span>
+<span class="kw">IGNORE</span> 1 <span class="kw">ROWS</span>
+(@col1, @col2, @fecha_raw, @cod_mpio)
+<span class="kw">SET</span>
+  nombre = <span class="fn">NULLIF</span>(<span class="fn">TRIM</span>(@col1), <span class="str">''</span>),
+  cod_municipio = <span class="fn">NULLIF</span>(<span class="fn">TRIM</span>(@cod_mpio), <span class="str">''</span>);
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">02</div>
+        <div class="step-content">
+          <p class="step-tag">Transformación</p>
+          <h3 class="step-title">Limpieza y tipado robusto</h3>
+          <p class="step-desc">Conversión robusta de fechas con múltiples formatos, normalización de tipos numéricos y control de calidad post-carga mediante conteo de campos críticos.</p>
+          <div class="code-block">
+<span class="kw">UPDATE</span> ips_raw
+<span class="kw">SET</span>
+  fecha_habilitacion = <span class="fn">STR_TO_DATE</span>(fecha_raw, <span class="str">'%d/%m/%Y'</span>),
+  cod_municipio      = <span class="fn">NULLIF</span>(<span class="fn">TRIM</span>(cod_municipio), <span class="str">''</span>),
+  antiguedad_anos    = <span class="fn">TIMESTAMPDIFF</span>(<span class="kw">YEAR</span>, fecha_habilitacion, <span class="fn">CURDATE</span>());
+
+<span class="cm">-- Control de calidad post-carga</span>
+<span class="kw">SELECT</span> <span class="fn">COUNT</span>(*) <span class="kw">AS</span> total,
+       <span class="fn">SUM</span>(fecha_habilitacion <span class="kw">IS NULL</span>) <span class="kw">AS</span> fechas_nulas
+<span class="kw">FROM</span> ips_raw;
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">03</div>
+        <div class="step-content">
+          <p class="step-tag">Normalización geográfica</p>
+          <h3 class="step-title">Claves de unión entre REPS y DANE</h3>
+          <p class="step-desc">Componente crítico del pipeline: creación de claves normalizadas mediante remoción de tildes, normalización de mayúsculas y reemplazo de espacios para garantizar JOINs confiables entre la tabla de IPS y los datos de población del DANE.</p>
+          <div class="code-block">
+<span class="kw">UPDATE</span> ips_clean
+<span class="kw">SET</span> municipio_key = <span class="fn">UPPER</span>(
+  <span class="fn">REPLACE</span>(
+    <span class="fn">CONVERT</span>(municipio <span class="kw">USING</span> ascii),
+    <span class="str">' '</span>, <span class="str">'_'</span>
+  )
+);
+
+<span class="cm">-- JOIN confiable entre REPS y población DANE</span>
+<span class="kw">SELECT</span> i.municipio, p.poblacion
+<span class="kw">FROM</span> ips_clean i
+<span class="kw">JOIN</span> poblacion_dane p <span class="kw">ON</span> i.municipio_key = p.municipio_key;
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">04</div>
+        <div class="step-content">
+          <p class="step-tag">Capa semántica</p>
+          <h3 class="step-title">Vistas analíticas para Power BI</h3>
+          <p class="step-desc">Vistas reutilizables para consumo directo en herramientas BI. Separación clara entre definición de vistas (DDL) y capa de consumo (consultas). Métricas calculadas: cobertura por 100.000 hab., naturaleza jurídica, riesgo regulatorio.</p>
+          <div class="code-block">
+<span class="kw">CREATE VIEW</span> v_cobertura_municipal <span class="kw">AS</span>
+<span class="kw">SELECT</span>
+  i.municipio,
+  i.departamento,
+  <span class="fn">COUNT</span>(*) <span class="kw">AS</span> total_ips,
+  p.poblacion,
+  <span class="fn">ROUND</span>(<span class="fn">COUNT</span>(*) * 100000.0 / p.poblacion, 2) <span class="kw">AS</span> ips_por_100k
+<span class="kw">FROM</span> ips_clean i
+<span class="kw">JOIN</span> poblacion_dane p <span class="kw">USING</span>(municipio_key)
+<span class="kw">GROUP BY</span> i.municipio, i.departamento, p.poblacion;
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="hr">
+
+  <!-- RESULTADOS -->
+  <section class="section" id="resultados">
+    <p class="section-num">03 · Resultados</p>
+    <h2 class="section-title">Lo que entrega el proyecto</h2>
+
+    <div class="results-row">
+      <div class="result-stat">
+        <p class="stat-value">100%</p>
+        <p class="stat-label">Pipeline en SQL puro.<br>Sin dependencias externas.</p>
+      </div>
+      <div class="result-stat">
+        <p class="stat-value">4</p>
+        <p class="stat-label">Capas definidas:<br>DDL → ETL → Vistas → Consultas</p>
+      </div>
+      <div class="result-stat">
+        <p class="stat-value">2</p>
+        <p class="stat-label">Fuentes integradas:<br>REPS + DANE</p>
+      </div>
+    </div>
+
+    <table class="status-table">
+      <thead>
+        <tr>
+          <th>Estado regulatorio</th>
+          <th>Criterio</th>
+          <th>Uso en BI</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <span style="display:inline-flex;align-items:center;">
+              <span class="dot dot-green"></span>Vigente
+            </span>
+          </td>
+          <td style="color:var(--mid);font-weight:300;">Habilitación activa y al día</td>
+          <td style="color:var(--mid);font-weight:300;">Base de análisis operativo</td>
+        </tr>
+        <tr>
+          <td>
+            <span style="display:inline-flex;align-items:center;">
+              <span class="dot dot-amber"></span>Próxima a vencer
+            </span>
+          </td>
+          <td style="color:var(--mid);font-weight:300;">Vence en ≤ 90 días</td>
+          <td style="color:var(--mid);font-weight:300;">Alertas tempranas de riesgo</td>
+        </tr>
+        <tr>
+          <td>
+            <span style="display:inline-flex;align-items:center;">
+              <span class="dot dot-red"></span>Vencida
+            </span>
+          </td>
+          <td style="color:var(--mid);font-weight:300;">Habilitación expirada</td>
+          <td style="color:var(--mid);font-weight:300;">Revisión regulatoria urgente</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section" id="github">
+    <div class="cta-left">
+      <p class="cta-eyebrow">Repositorio abierto · MIT</p>
+      <h2 class="cta-title">Ver el código<br>completo</h2>
+      <p class="cta-sub">SQL documentado, datasets de muestra y vistas listas para conectar con Power BI.</p>
+    </div>
+    <div class="cta-actions">
+      <a
+        href="https://github.com/Fabian-Ra/mysql-ips-colombia"
+        target="_blank"
+        rel="noopener"
+        class="btn-primary"
+        onclick="gtag('event', 'click_repo', { 'event_category': 'engagement', 'event_label': 'GitHub CTA' });"
+      >
+        <svg class="gh-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.11.82-.26.82-.58v-2.03c-3.34.72-4.04-1.61-4.04-1.61-.54-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49 1 .11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02.005 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.49 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.21.7.83.58C20.57 21.8 24 17.3 24 12 24 5.37 18.63 0 12 0z"/>
+        </svg>
+        Ver repositorio en GitHub
+      </a>
+      <a
+        href="https://github.com/Fabian-Ra"
+        target="_blank"
+        rel="noopener"
+        class="btn-ghost"
+      >
+        Perfil completo →
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span class="footer-copy">© 2024 Fabian Ramírez · Data Analyst · Colombia</span>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="https://github.com/Fabian-Ra" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://github.com/Fabian-Ra/mysql-ips-colombia" target="_blank" rel="noopener">Repositorio</a>
+    </nav>
+  </footer>
 
 </body>
 </html>
