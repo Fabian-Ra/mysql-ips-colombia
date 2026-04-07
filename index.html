@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Fabian Ramírez | Data Analyst</title>
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-C0MXFHDP9F"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-C0MXFHDP9F');
+  </script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #0f172a;
+      color: #f1f5f9;
+    }
+    header {
+      padding: 40px;
+      text-align: center;
+      background: #1e293b;
+    }
+    h1 {
+      margin: 0;
+      font-size: 32px;
+    }
+    .container {
+      padding: 40px;
+      max-width: 900px;
+      margin: auto;
+    }
+    .card {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    button {
+      background: #38bdf8;
+      border: none;
+      padding: 12px 20px;
+      color: black;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0ea5e9;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>Fabian Ramírez</h1>
+  <p>Data Analyst | SQL | BI | Analítica de Datos</p>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h2>Proyecto: Análisis de IPS en Colombia</h2>
+    <p>
+      Proyecto enfocado en el análisis de datos del sistema de salud en Colombia utilizando SQL.
+      Se trabajó en la limpieza, transformación y análisis de datos para generar insights relevantes
+      sobre cobertura y distribución de IPS.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>Enfoque del análisis</h2>
+    <ul>
+      <li>Consultas SQL para extracción de datos</li>
+      <li>Construcción de métricas clave</li>
+      <li>Análisis exploratorio</li>
+      <li>Optimización de consultas</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Acceso al proyecto</h2>
+    <p>Puedes ver el repositorio completo aquí:</p>
+
+    <button onclick="trackClick()">
+      Ver repositorio en GitHub
+    </button>
+  </div>
+
+</div>
+
+<script>
+function trackClick() {
+  gtag('event', 'click_repo', {
+    'event_category': 'engagement',
+    'event_label': 'GitHub Project'
+  });
+
+  window.open('https://github.com/Fabian-Ra/mysql-ips-colombia', '_blank');
+}
+</script>
+
+</body>
+</html>
